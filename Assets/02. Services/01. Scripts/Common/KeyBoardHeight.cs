@@ -1,37 +1,7 @@
-using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
 
-public class MobilkeyBoard : MonoBehaviour
+public class KeyBoardHeight : MonoBehaviour
 {
-    // Start is called before the first frame update
-    //void Start()
-    //{
-    //    openAndroidKeyboard();
-    //}
-
-    //private void Update()
-    //{
-    //    if (TouchScreenKeyboard.visible)
-    //    {
-    //        if (!isOn)
-    //            ApplyScrollPosition();
-    //    }
-    //}
-
-    //public void openAndroidKeyboard()
-    //{
-    //    keyboard = TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default);
-    //    Invoke("hideInputField", 0.1f);
-    //}
-    //private void hideInputField()
-    //{
-    //    TouchScreenKeyboard.hideInput = true;
-    //}
     private Vector2 inputOriginalPosition;
     public RectTransform inputFieldRectTransform;
 
