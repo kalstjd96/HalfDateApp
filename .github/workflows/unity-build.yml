@@ -1,0 +1,59 @@
+name: Unity Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build for Android and WebGL
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        targetPlatform: [WebGL, Android]
+
+    steps:
+      # 1. GitHub 저장소에서 코드를 체크아웃합니다.
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Unity를 설정합니다.
+      - name: Set up Unity
+        uses: game-ci/unity-setup@v2
+        with:
+          unityVersion: '2022.3.37f1'  # Unity 버전에 맞게 수정하세요
+
+      # 3. Android 빌드용 추가 패키지 설치
+      - name: Install Android dependencies
+        if: matrix.targetPlatform == 'Android'
+        run: sudo apt-get -q update && sudo apt-get install -y openjdk-11-jdk
+
+      # 4. Unity 라이선스 활성화 (Personal License의 경우 이 부분 생략 가능)
+      - name: Activate Unity
+        uses: game-ci/unity-activate@v2
+        with:
+          license: ${{ secrets.UNITY_LICENSE }}  # GitHub Secrets에 Unity License 파일 추가
+
+      # 5. 빌드 명령어 실행
+      - name: Build Unity project
+        run: |
+          /opt/unity/Editor/Unity -quit -batchmode -nographics -logFile -projectPath . \
+          -buildTarget ${{ matrix.targetPlatform }} \
+          -executeMethod BuildScript.PerformBuild \
+          -customBuildTarget ${{ matrix.targetPlatform }} \
+          -customBuildName MyUnityProject-${{ matrix.targetPlatform }} \
+          -customBuildPath ./Builds/${{ matrix.targetPlatform }} \
+          -customBuildOptions Development \
+          -sceneList Scenes/Intro.unity Scenes/Main.unity
+
+      # 6. 빌드 결과물을 아티팩트로 저장
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: ./Builds/${{ matrix.targetPlatform }}
