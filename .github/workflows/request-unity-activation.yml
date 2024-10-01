@@ -1,0 +1,24 @@
+name: Request Unity Activation File
+
+on:
+  workflow_dispatch: # 수동으로 워크플로우 실행
+
+jobs:
+  requestActivationFile:
+    name: Request Unity Activation File
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. GitHub 저장소에서 코드를 체크아웃합니다.
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Unity 설정 및 라이선스 활성화를 위한 파일 요청
+      - name: Set up Unity
+        uses: game-ci/unity-setup@v2
+        with:
+          unityVersion: '2022.3.37f1'  # 사용 중인 Unity 버전으로 교체
+
+      # 3. 수동 라이선스 활성화를 위한 .alf 파일 생성
+      - name: Request manual activation file
+        uses: game-ci/unity-request-manual-activation-file@v2
