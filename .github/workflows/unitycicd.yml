@@ -1,46 +1,41 @@
-name: UnityBuildTest
+name: Automated Build ⭐
 
 on:
-  workflow_dispatch:
-
-permissions: write-all
-  
+  push: # Master 브랜치에 Push가 되면 빌드가 되도록 동작시킵니다.
+    branches: [ main ]
+    
 jobs:
-  #Job 설정
-  buildForAndroid: 
-    name: Build Android🛸🛸🛸
-    runs-on: ubuntu-latest
+  buildWindows:
+    name: 💻 Windows-64 Bit
+    runs-on: windows-latest # 윈도우를 사용합니다.
+    
     steps:
-
-      # Step1 - Check Out
-      - name: Check Out
+      # Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           lfs: true
 
-      # Step2 - Cache Library
-      - name: Cache Library
-        uses: actions/cache@v4.0.2
-        with: 
+      # Cache (캐시파일을 생성하여 다음 빌드시 더 빠르게 빌드를 할 수 있도록 해줍니다.)
+      - uses: actions/cache@v4
+        with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
-      # Step3 - Unity Build
-      - name: Unity Build
+      # Build
+      - name: Build project
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: Android
-      
-      # Step4 - Upload Build File
-      - name: Upload Build File
-      - uses: actions/upload-artifact@v3
+          targetPlatform: StandaloneWindows64
+
+      # Output
+      - uses: actions/upload-artifact@v4
         with:
-          name: Build-Android
+          name: Windows Build
           path: build
